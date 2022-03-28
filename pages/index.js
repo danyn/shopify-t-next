@@ -2,7 +2,8 @@
 import ProductEmptyState from "../components/ProductEmptyState";
 import { ResourcePicker } from "@shopify/app-bridge-react";
 import { useState } from "react";
-import ProductList from "../components/ProductList";
+// import ProductList from "../components/ProductList";
+import ProductPage from "../components/ProductPage";
 
 export default function Index() {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,7 +24,7 @@ export default function Index() {
       />
       { products.length == 0 ?
         (<ProductEmptyState setIsOpen={setIsOpen} />) :
-        (<ProductList products={products}/> )
+        ( <ProductPage products={products} setIsOpen={setIsOpen} /> )
       }
     </>
   );
