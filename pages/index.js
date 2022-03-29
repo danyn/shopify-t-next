@@ -1,13 +1,19 @@
 
 import ProductEmptyState from "../components/ProductEmptyState";
 import { ResourcePicker } from "@shopify/app-bridge-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 // import ProductList from "../components/ProductList";
 import ProductPage from "../components/ProductPage";
 
 export default function Index() {
   const [isOpen, setIsOpen] = useState(false);
   const [products, setProducts] = useState([]);
+  const [pids, setPids] = useState([]);
+
+  useEffect(() => {
+    setPids(products.map(product => {return {id: product.id}}));
+    console.log('pids', pids);
+  }, [products,])
 
   const selectedProducts = (items) => {
     setProducts(items);
@@ -18,6 +24,8 @@ export default function Index() {
     <>
       <ResourcePicker
         resourceType="Product"
+        initialSelectionIds={pids}
+        showVariants={false}
         open={isOpen}
         onCancel={() => setIsOpen(false)}
         onSelection={ payload => selectedProducts(payload.selection)}
