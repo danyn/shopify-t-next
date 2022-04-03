@@ -7,6 +7,8 @@ import Koa from "koa";
 import next from "next";
 import Router from "koa-router";
 
+import * as handlers from './handlers'
+
 dotenv.config();
 const port = parseInt(process.env.PORT, 10) || 8081;
 const dev = process.env.NODE_ENV !== "production";
@@ -46,6 +48,7 @@ app.prepare().then(async () => {
         // Access token and shop available in ctx.state.shopify
         const { shop, accessToken, scope } = ctx.state.shopify;
         const host = ctx.query.host;
+        ctx.myhost = host;
         ACTIVE_SHOPIFY_SHOPS[shop] = scope;
 
         const responses = await Shopify.Webhooks.Registry.register({
@@ -62,7 +65,12 @@ app.prepare().then(async () => {
         }
 
         // Redirect to app with shop parameter upon auth
-        ctx.redirect(`/?shop=${shop}&host=${host}`);
+        // ctx.redirect(`/?shop=${shop}&host=${host}`);
+
+        server.context.client = await handlers.createClient(shop, accessToken);
+
+        await handlers.getSubscriptionUrl(ctx);
+
       },
     })
   );
@@ -100,6 +108,7 @@ app.prepare().then(async () => {
     if (ACTIVE_SHOPIFY_SHOPS[shop] === undefined) {
       ctx.redirect(`/auth?shop=${shop}`);
     } else {
+      console.log('else....')
       await handleRequest(ctx);
     }
   });
